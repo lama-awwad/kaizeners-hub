@@ -1,0 +1,31 @@
+name: Daily Directory Sync
+
+on:
+  schedule:
+    # Runs automatically once every day at 02:00 UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allows you to manually trigger it with a button click to test
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run sync script
+        run: node sync.js
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ZENHR_TOKEN: ${{ secrets.ZENHR_TOKEN }}
+          ZENHR_BASE_URL: ${{ secrets.ZENHR_BASE_URL }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
